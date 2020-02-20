@@ -6,7 +6,7 @@
   "module": "dist/esm/index.js",
   "scripts": {
     "build": "tsc -m es6 && webpack",
-    "lint": "eslint src",
+    "lint": "eslint src --ext .js,.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,6 +19,11 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-typescript": "^7.8.3",
+    "@types/node": "^13.7.4",
+    "@types/qrcode": "^1.3.4",
+    "@types/uuid": "^3.4.7",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
     "babel-loader": "^8.0.6",
     "eslint": "^6.1.0",
     "eslint-config-airbnb": "^18.0.1",
