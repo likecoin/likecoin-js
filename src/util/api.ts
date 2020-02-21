@@ -14,6 +14,7 @@ export async function getUserInfo(userId: string) {
   return data;
 }
 
-export default {
-  getUserInfo,
-};
+export async function getLikePayTxsByTxId(txId: string) {
+  const { data } = await api.get(`/tx/likepay/${txId}`);
+  return data;
+}
