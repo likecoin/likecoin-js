@@ -56,15 +56,15 @@ export async function createPaymentQRCode(
   { blocking = true } = {},
 ) {
   const user = await getUserInfo(likerId);
-  const { cosomosWallet, avatar } = user;
-  const cosmosAmount = {
+  const { cosmosWallet, avatar } = user;
+  const coins = {
     denom: COSMOS_DENOM,
     amount: new BigNumber(amount).multipliedBy(1e9).toFixed(),
   };
   const uuid = v4();
   const payload = JSON.stringify({
-    wallet: cosomosWallet,
-    amount: cosmosAmount,
+    address: cosmosWallet,
+    coins,
     memo: uuid,
   });
   const canvas = <HTMLCanvasElement>document.querySelector(selector);
