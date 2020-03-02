@@ -1,14 +1,15 @@
 import BigNumber from 'bignumber.js';
 import * as uuidParse from 'uuid-parse';
 import * as QRCode from 'qrcode';
-import Pbf from 'pbf';
 import * as bech32 from 'bech32';
+import Long from 'long';
 import { v4 } from 'uuid';
+import base64url from 'base64url';
 
 import { getUserInfo, getLikePayTxsByTxId } from './util/api';
 import { COSMOS_DENOM } from './constant';
 import { timeout } from './util/misc';
-import { LikePayId } from './schema/pay-id.js';
+import { LikePayId } from "./schema/pay-id.js";
 
 export async function getTx(txId: string) {
   const [tx] = await getLikePayTxsByTxId(txId);
@@ -22,17 +23,14 @@ export function encodePayId({
 }: {
   uuid: string;
   address: string;
-  amount: number;
+  amount: string;
 }) {
-  const pbf = new Pbf();
-  const amountLE = Buffer.alloc(8);
-  amountLE.writeDoubleLE(amount, 0); // TODO: bignumber?
-  LikePayId.write({
-    uuid: uuidParse,
-    address: bech32.fromWords(bech32.decode(address).words),
-    amount: amountLE,
-  }, pbf);
-  const buffer = pbf.finish();
+  const message = LikePayId.create({
+    uuid: uuidParse.parse(uuid),
+    address: Buffer.from(bech32.fromWords(bech32.decode(address).words)),
+    amount: Long.fromString(amount, true, 10),
+  });
+  const buffer = LikePayId.encode(message).finish();
   return Buffer.from(buffer).toString('base64');
 }
 
@@ -105,7 +103,7 @@ export async function createPaymentQRCode(
   }
   const txId = encodePayId({
     address: cosmosWallet,
-    amount,
+    amount: coins.amount,
     uuid,
   });
   if (!blocking) return { id: txId };
