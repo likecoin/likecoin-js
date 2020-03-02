@@ -1,6 +1,8 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
+  mode: 'production',
   entry: './src/index.ts',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -26,6 +28,11 @@ module.exports = {
               '@babel/preset-typescript',
             ],
             plugins: [
+              ["@babel/plugin-transform-runtime",
+                {
+                  "regenerator": true
+                }
+              ],
               '@babel/plugin-proposal-class-properties',
               '@babel/plugin-proposal-object-rest-spread',
             ],
@@ -34,4 +41,7 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new webpack.EnvironmentPlugin(['NODE_ENV', 'IS_TESTNET']),
+  ],
 };

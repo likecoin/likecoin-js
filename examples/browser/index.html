@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>LIKE pay</title>
+    <script src="./js/like-pay.js"></script>
+</head>
+
+<body>
+    <div>
+        <canvas id="likepay"></canvas>
+    </div>
+
+    <script>
+        function init() {
+          likePay.createPaymentQRCode('#likepay', 'likecoin', 1);
+        }
+        init();
+    </script>
+</body>
+
+</html>
