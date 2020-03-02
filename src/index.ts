@@ -1,14 +1,37 @@
 import BigNumber from 'bignumber.js';
-import { v4 } from 'uuid';
+import * as uuidParse from 'uuid-parse';
 import * as QRCode from 'qrcode';
+import * as bech32 from 'bech32';
+import Long from 'long';
+import { v4 } from 'uuid';
+import base64url from 'base64url';
 
 import { getUserInfo, getLikePayTxsByTxId } from './util/api';
 import { COSMOS_DENOM } from './constant';
 import { timeout } from './util/misc';
+import { LikePayId } from './schema/pay-id.js';
 
 export async function getTx(txId: string) {
   const [tx] = await getLikePayTxsByTxId(txId);
   return tx;
+}
+
+export function encodePayId({
+  uuid,
+  address,
+  amount,
+}: {
+  uuid: string;
+  address: string;
+  amount: string;
+}) {
+  const message = LikePayId.create({
+    uuid: uuidParse.parse(uuid),
+    address: Buffer.from(bech32.fromWords(bech32.decode(address).words)),
+    amount: Long.fromString(amount, true, 10),
+  });
+  const buffer = LikePayId.encode(message).finish();
+  return base64url(Buffer.from(buffer));
 }
 
 export async function pollForTxComplete(txId: string) {
@@ -67,7 +90,7 @@ export async function createPaymentQRCode(
     coins,
     memo: uuid,
   });
-  const canvas = <HTMLCanvasElement>document.querySelector(selector);
+  const canvas = document.querySelector(selector) as HTMLCanvasElement;
   // TODO: check canvas is canvas
   await QRCode.toCanvas(canvas, payload, {
     errorCorrectionLevel: 'H',
@@ -78,7 +101,11 @@ export async function createPaymentQRCode(
   } catch (err) {
     console.error(err);
   }
-  const txId = uuid; // TODO: encode with base64/protobuf?
+  const txId = encodePayId({
+    address: cosmosWallet,
+    amount: coins.amount,
+    uuid,
+  });
   if (!blocking) return { id: txId };
   const txData = await pollForTxComplete(txId);
   return { id: txId, ...txData };
