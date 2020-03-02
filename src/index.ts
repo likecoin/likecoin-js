@@ -9,7 +9,7 @@ import base64url from 'base64url';
 import { getUserInfo, getLikePayTxsByTxId } from './util/api';
 import { COSMOS_DENOM } from './constant';
 import { timeout } from './util/misc';
-import { LikePayId } from "./schema/pay-id.js";
+import { LikePayId } from './schema/pay-id.js';
 
 export async function getTx(txId: string) {
   const [tx] = await getLikePayTxsByTxId(txId);
@@ -31,7 +31,7 @@ export function encodePayId({
     amount: Long.fromString(amount, true, 10),
   });
   const buffer = LikePayId.encode(message).finish();
-  return Buffer.from(buffer).toString('base64');
+  return base64url(Buffer.from(buffer));
 }
 
 export async function pollForTxComplete(txId: string) {
