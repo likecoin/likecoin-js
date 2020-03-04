@@ -42,8 +42,8 @@ export async function pollForTxComplete(txId: string) {
       txData = await getTx(txId);
     } catch (err) {
       if (err?.response?.status !== 404) throw err;
-      await timeout(5000);
     }
+    await timeout(5000);
     /* eslint-enable no-await-in-loop */
   }
   return txData;
