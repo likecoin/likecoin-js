@@ -78,6 +78,7 @@ export async function createPaymentQRCode(
   amount: number,
   { blocking = true } = {},
 ) {
+  const container = document.querySelector(selector) as HTMLElement;
   const user = await getUserInfo(likerId);
   const { cosmosWallet, avatar } = user;
   const coins = {
@@ -90,8 +91,8 @@ export async function createPaymentQRCode(
     coins,
     memo: uuid,
   });
-  const canvas = document.querySelector(selector) as HTMLCanvasElement;
-  // TODO: check canvas is canvas
+  const canvas = document.createElement('canvas');
+  container.appendChild(canvas);
   await QRCode.toCanvas(canvas, payload, {
     errorCorrectionLevel: 'H',
     color: { dark: '#28646e' },
