@@ -9,7 +9,7 @@ import base64url from 'base64url';
 import { getUserInfo, getLikePayTxsByTxId } from './util/api';
 import { COSMOS_DENOM } from './constant';
 import { timeout } from './util/misc';
-import { LikePayId } from './schema/pay-id.js';
+import { LikePayId } from './schema/pay-id';
 
 export async function getTx(txId: string) {
   const [tx] = await getLikePayTxsByTxId(txId);
@@ -24,7 +24,7 @@ export function encodePayId({
   uuid: string;
   address: string;
   amount: string;
-}) {
+}): string {
   const message = LikePayId.create({
     uuid: uuidParse.parse(uuid),
     address: Buffer.from(bech32.fromWords(bech32.decode(address).words)),
@@ -52,7 +52,7 @@ export async function pollForTxComplete(txId: string) {
 function drawAvatarInQRCode(canvas: HTMLCanvasElement, avatarSrc: string) {
   const context = canvas.getContext('2d');
   const image = new Image();
-  image.onload = () => {
+  image.onload = (): void => {
     const imageWidth = canvas.width / 5;
     const imageHeight = canvas.height / 5;
     const canvasWidthCenter = canvas.width / 2;
