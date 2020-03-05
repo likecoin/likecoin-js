@@ -60,11 +60,21 @@ export async function pollForTxComplete(
 export async function waitForPayment({ selector, id }: { selector: string; id: string }) {
   const container = document.querySelector(selector) as HTMLElement;
   const txId = id || container.getAttribute('data-likepay-id');
-  await pollForTxComplete({ id: txId }, { waitForSuccess: false });
-  container.innerHTML = 'Waiting Tx to confirm...';
-  const txData = await pollForTxComplete({ id: txId }, { waitForSuccess: true });
-  container.innerHTML = 'Done!';
-  return { id: txId, tx: txData, selector };
+  try {
+    await pollForTxComplete({ id: txId }, { waitForSuccess: false });
+    container.innerHTML = 'Waiting Tx to confirm...';
+    const txData = await pollForTxComplete({ id: txId }, { waitForSuccess: true });
+    container.innerHTML = 'Done!';
+    return { id: txId, tx: txData, selector };
+  } catch (err) {
+    if (err.message === 'TX_FAILED') {
+      container.innerHTML = 'Payment failed, please try again!';
+    } else {
+      console.error(err);
+      container.innerHTML = `Unknown error: ${err}`;
+    }
+    throw err;
+  }
 }
 
 function drawAvatarInQRCode(canvas: HTMLCanvasElement, avatarSrc: string) {
@@ -98,7 +108,9 @@ export async function createPaymentQRCode(
 ) {
   const container = document.querySelector(selector) as HTMLElement;
   const user = await getUserInfo(likerId);
+  if (!user) container.innerHTML = 'User not found';
   const { cosmosWallet, avatar } = user;
+  if (!cosmosWallet) container.innerHTML = 'cosmosWallet not found';
   const coins = {
     denom: COSMOS_DENOM,
     amount: new BigNumber(amount).multipliedBy(1e9).toFixed(),
