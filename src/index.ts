@@ -34,19 +34,37 @@ export function encodePayId({
   return base64url(Buffer.from(buffer));
 }
 
-export async function pollForTxComplete(txId: string) {
+export async function pollForTxComplete(
+  { id }: { id: string },
+  { waitForSuccess = true }: { waitForSuccess: boolean } = { waitForSuccess: true },
+) {
   let txData;
-  while (!txData) {
+  let isDone = !waitForSuccess;
+  while (!(txData && isDone)) {
   /* eslint-disable no-await-in-loop */
     try {
-      txData = await getTx(txId);
+      txData = await getTx(id);
     } catch (err) {
       if (err?.response?.status !== 404) throw err;
+    }
+    if (txData && waitForSuccess) {
+      if (txData.status === 'fail') throw new Error('TX_FAILED');
+      isDone = txData.status === 'success';
     }
     await timeout(5000);
     /* eslint-enable no-await-in-loop */
   }
   return txData;
+}
+
+export async function waitForPayment({ selector, id }: { selector: string; id: string }) {
+  const container = document.querySelector(selector) as HTMLElement;
+  const txId = id || container.getAttribute('data-likepay-id');
+  await pollForTxComplete({ id: txId }, { waitForSuccess: false });
+  container.innerHTML = 'Waiting Tx to confirm...';
+  const txData = await pollForTxComplete({ id: txId }, { waitForSuccess: true });
+  container.innerHTML = 'Done!';
+  return { id: txId, tx: txData, selector };
 }
 
 function drawAvatarInQRCode(canvas: HTMLCanvasElement, avatarSrc: string) {
@@ -107,9 +125,10 @@ export async function createPaymentQRCode(
     amount: coins.amount,
     uuid,
   });
-  if (!blocking) return { id: txId };
-  const txData = await pollForTxComplete(txId);
-  return { id: txId, ...txData };
+  container.setAttribute('data-likepay-id', txId);
+  if (!blocking) return { id: txId, selector };
+  const txData = await waitForPayment({ selector, id: txId });
+  return { id: txId, tx: txData, selector };
 }
 
 export default {
