@@ -117,6 +117,7 @@ export async function createPaymentQRCode(
   };
   const uuid = v4();
   const payload = JSON.stringify({
+    likerId,
     address: cosmosWallet,
     coins,
     memo: uuid,
