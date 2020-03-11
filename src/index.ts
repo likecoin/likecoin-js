@@ -9,7 +9,7 @@ import base64url from 'base64url';
 import { getUserInfo, getLikePayTxsByTxId } from './util/api';
 import { COSMOS_DENOM } from './constant';
 import { timeout } from './util/misc';
-import { LikePayId } from './schema/pay-id.js';
+import { LikePayId } from './schema/pay-id';
 
 export async function getTx(txId: string) {
   const [tx] = await getLikePayTxsByTxId(txId);
@@ -24,7 +24,7 @@ export function encodePayId({
   uuid: string;
   address: string;
   amount: string;
-}) {
+}): string {
   const message = LikePayId.create({
     uuid: uuidParse.parse(uuid),
     address: Buffer.from(bech32.fromWords(bech32.decode(address).words)),
@@ -34,14 +34,22 @@ export function encodePayId({
   return base64url(Buffer.from(buffer));
 }
 
-export async function pollForTxComplete(txId: string) {
+export async function pollForTxComplete(
+  { id }: { id: string },
+  { waitForSuccess = true }: { waitForSuccess: boolean } = { waitForSuccess: true },
+) {
   let txData;
-  while (!txData) {
+  let isDone = !waitForSuccess;
+  while (!(txData && isDone)) {
   /* eslint-disable no-await-in-loop */
     try {
-      txData = await getTx(txId);
+      txData = await getTx(id);
     } catch (err) {
       if (err?.response?.status !== 404) throw err;
+    }
+    if (txData && waitForSuccess) {
+      if (txData.status === 'fail') throw new Error('TX_FAILED');
+      isDone = txData.status === 'success';
     }
     await timeout(5000);
     /* eslint-enable no-await-in-loop */
@@ -49,10 +57,30 @@ export async function pollForTxComplete(txId: string) {
   return txData;
 }
 
+export async function waitForPayment({ selector, id }: { selector: string; id: string }) {
+  const container = document.querySelector(selector) as HTMLElement;
+  const txId = id || container.getAttribute('data-likepay-id');
+  try {
+    await pollForTxComplete({ id: txId }, { waitForSuccess: false });
+    container.innerHTML = 'Waiting Tx to confirm...';
+    const txData = await pollForTxComplete({ id: txId }, { waitForSuccess: true });
+    container.innerHTML = 'Done!';
+    return { id: txId, tx: txData, selector };
+  } catch (err) {
+    if (err.message === 'TX_FAILED') {
+      container.innerHTML = 'Payment failed, please try again!';
+    } else {
+      console.error(err);
+      container.innerHTML = `Unknown error: ${err}`;
+    }
+    throw err;
+  }
+}
+
 function drawAvatarInQRCode(canvas: HTMLCanvasElement, avatarSrc: string) {
   const context = canvas.getContext('2d');
   const image = new Image();
-  image.onload = () => {
+  image.onload = (): void => {
     const imageWidth = canvas.width / 5;
     const imageHeight = canvas.height / 5;
     const canvasWidthCenter = canvas.width / 2;
@@ -78,20 +106,24 @@ export async function createPaymentQRCode(
   amount: number,
   { blocking = true } = {},
 ) {
+  const container = document.querySelector(selector) as HTMLElement;
   const user = await getUserInfo(likerId);
+  if (!user) container.innerHTML = 'User not found';
   const { cosmosWallet, avatar } = user;
+  if (!cosmosWallet) container.innerHTML = 'cosmosWallet not found';
   const coins = {
     denom: COSMOS_DENOM,
     amount: new BigNumber(amount).multipliedBy(1e9).toFixed(),
   };
   const uuid = v4();
   const payload = JSON.stringify({
+    likerId,
     address: cosmosWallet,
     coins,
     memo: uuid,
   });
-  const canvas = document.querySelector(selector) as HTMLCanvasElement;
-  // TODO: check canvas is canvas
+  const canvas = document.createElement('canvas');
+  container.appendChild(canvas);
   await QRCode.toCanvas(canvas, payload, {
     errorCorrectionLevel: 'H',
     color: { dark: '#28646e' },
@@ -106,9 +138,10 @@ export async function createPaymentQRCode(
     amount: coins.amount,
     uuid,
   });
-  if (!blocking) return { id: txId };
-  const txData = await pollForTxComplete(txId);
-  return { id: txId, ...txData };
+  container.setAttribute('data-likepay-id', txId);
+  if (!blocking) return { id: txId, selector };
+  const txData = await waitForPayment({ selector, id: txId });
+  return { id: txId, tx: txData, selector };
 }
 
 export default {
