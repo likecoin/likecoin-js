@@ -1,0 +1,49 @@
+{
+  "name": "@likecoin/likecoin-js",
+  "version": "0.0.7",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/esm/index.js",
+  "scripts": {
+    "build": "rm -rf dist && tsc && tsc --project tsconfig.es6.json",
+    "lint": "eslint src --ext .ts",
+    "generate": "npm run build",
+    "prepublish": "npm run build",
+    "test": "jest --coverage"
+  },
+  "files": [
+    "dist/",
+    "!*.spec.*",
+    "!**/tests/*"
+  ],
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likecoin/iscn-js.git"
+  },
+  "license": "GPL-3.0-or-later",
+  "peerDependencies": {
+    "@cosmjs/stargate": "^0.26.0",
+    "cosmjs-types": "^0.2.0"
+  },
+  "devDependencies": {
+    "@cosmjs/stargate": "^0.26.0",
+    "@types/jest": "^27.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.30.0",
+    "@typescript-eslint/parser": "^4.30.0",
+    "cosmjs-types": "^0.2.0",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "14.2.1",
+    "eslint-import-resolver-typescript": "^2.4.0",
+    "eslint-plugin-import": "^2.22.1",
+    "jest": "^27.1.0",
+    "ts-jest": "^27.0.5",
+    "typescript": "^4.4.2"
+  },
+  "dependencies": {
+    "@likecoin/iscn-js": "0.0.7",
+    "axios": "^0.24.0",
+    "form-data": "^4.0.0",
+    "glob-promise": "^4.2.2"
+  }
+}
