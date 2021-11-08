@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import { estimateArweaveResponse, uploadArweaveResponse } from 'src/types';
+import { estimateArweaveResponse, uploadArweaveResponse } from '../types';
 import { LIKE_CO_API } from '../constant';
 import { createNewForm } from './form';
 import isNode from './util';
@@ -27,7 +27,7 @@ export async function estimateArweavePrice(files: string | File[]) {
   return data as estimateArweaveResponse;
 }
 
-export async function uploadArweavePrice(files: string | File[], txHash: string) {
+export async function uploadToArweave(files: string | File[], txHash: string) {
   let form: any;
   if (typeof files === 'string') {
     if (!isNode()) throw new Error('file path is only supported in node.js');
