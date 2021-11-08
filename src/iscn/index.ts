@@ -1,3 +1,3 @@
 import { ISCNSigningClient } from '@likecoin/iscn-js';
 
-export default ISCNSigningClient;
+export default new ISCNSigningClient();
