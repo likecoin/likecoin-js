@@ -43,6 +43,7 @@
   "dependencies": {
     "@likecoin/iscn-js": "0.0.7",
     "axios": "^0.24.0",
+    "bignumber.js": "^9.0.1",
     "form-data": "^4.0.0",
     "glob-promise": "^4.2.2"
   }
