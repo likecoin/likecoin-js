@@ -1,5 +1,5 @@
 import { estimateArweavePrice, uploadToArweave } from './api';
-import signingClient from '../iscn';
+import { signingClient } from '../iscn';
 import { sendLIKE } from '../tx';
 
 export async function submitToArweaveAndISCN(

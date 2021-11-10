@@ -1,3 +1,4 @@
-import { ISCNSigningClient } from '@likecoin/iscn-js';
+import { ISCNSigningClient, ISCNQueryClient } from '@likecoin/iscn-js';
 
-export default new ISCNSigningClient();
+export const signingClient = new ISCNSigningClient();
+export const queryClient = new ISCNQueryClient();
