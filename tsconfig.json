@@ -17,7 +17,7 @@
     "noImplicitReturns": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "outDir": "dist",
+    "outDir": "dist/commonjs",
     "pretty": true,
     "rootDir": "src",
     "removeComments": false,
