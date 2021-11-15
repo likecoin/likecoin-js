@@ -1,7 +1,9 @@
 import BigNumber from 'bignumber.js';
 import * as uuidParse from 'uuid-parse';
 import * as QRCode from 'qrcode';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as bech32 from 'bech32';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import Long from 'long';
 import { v4 } from 'uuid';
 import base64url from 'base64url';
@@ -44,7 +46,7 @@ export async function pollForTxComplete(
   /* eslint-disable no-await-in-loop */
     try {
       txData = await getTx(id);
-    } catch (err) {
+    } catch (err: any) {
       if (err?.response?.status !== 404) throw err;
     }
     if (txData && waitForSuccess) {
@@ -60,13 +62,14 @@ export async function pollForTxComplete(
 export async function waitForPayment({ selector, id }: { selector: string; id: string }) {
   const container = document.querySelector(selector) as HTMLElement;
   const txId = id || container.getAttribute('data-likepay-id');
+  if (!txId) throw new Error('Cannot get like pay tx id');
   try {
     await pollForTxComplete({ id: txId }, { waitForSuccess: false });
     container.innerHTML = 'Waiting Tx to confirm...';
     const txData = await pollForTxComplete({ id: txId }, { waitForSuccess: true });
     container.innerHTML = 'Done!';
     return { id: txId, tx: txData, selector };
-  } catch (err) {
+  } catch (err: any) {
     if (err.message === 'TX_FAILED') {
       container.innerHTML = 'Payment failed, please try again!';
     } else {
@@ -79,6 +82,7 @@ export async function waitForPayment({ selector, id }: { selector: string; id: s
 
 function drawAvatarInQRCode(canvas: HTMLCanvasElement, avatarSrc: string) {
   const context = canvas.getContext('2d');
+  if (!context) throw new Error('Cannot get 2D context');
   const image = new Image();
   image.onload = (): void => {
     const imageWidth = canvas.width / 5;
