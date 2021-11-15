@@ -1,12 +1,15 @@
+import { ISCNSignPayload } from '@likecoin/iscn-js';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { OfflineSigner } from '@cosmjs/proto-signing';
 import { estimateArweavePrice, uploadToArweave } from './api';
 import { signingClient } from '../iscn';
 import { sendLIKE } from '../tx';
 
 export async function submitToArweaveAndISCN(
   files: string | File[],
-  iscnMetadata,
-  signer,
-  fromAddress,
+  iscnMetadata: ISCNSignPayload,
+  signer: OfflineSigner,
+  fromAddress: string,
 ) {
   const estimate = await estimateArweavePrice(files);
   const {
