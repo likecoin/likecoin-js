@@ -1,6 +1,6 @@
 {
   "name": "@likecoin/likecoin-js",
-  "version": "0.0.7",
+  "version": "0.0.1",
   "description": "",
   "main": "./dist/commonjs/index.js",
   "module": "./dist/esm/index.js",
@@ -21,7 +21,7 @@
   "keywords": [],
   "repository": {
     "type": "git",
-    "url": "https://github.com/likecoin/iscn-js.git"
+    "url": "https://github.com/likecoin/likecoin-js.git"
   },
   "license": "GPL-3.0-or-later",
   "peerDependencies": {
