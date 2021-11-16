@@ -5,9 +5,12 @@
   "main": "./dist/commonjs/index.js",
   "module": "./dist/esm/index.js",
   "scripts": {
-    "build": "rm -rf dist && tsc && npm run build:es6 && npm run build:frontend",
-    "build:es6": "tsc --project tsconfig.es6.json",
+    "build": "rm -rf dist && npm run build:commonjs && npm run build:es6 && npm run build:frontend",
+    "build:commonjs": "tsc && npm run build:schema:commonjs",
+    "build:es6": "tsc --project tsconfig.es6.json && npm run build:schema:es6",
     "build:frontend": "webpack",
+    "build:schema:commonjs": "mkdir ./dist/commonjs/likepay/schema && pbjs -t static-module -w commonjs -o ./dist/commonjs/likepay/schema/pay-id.js ./src/likepay/schema/pay-id.proto --force-long",
+    "build:schema:es6": "mkdir ./dist/module/likepay/schema && pbjs -t static-module -w es6 -o ./dist/module/likepay/schema/pay-id.js ./src/likepay/schema/pay-id.proto --force-long",
     "lint": "eslint src --ext .ts",
     "generate": "npm run build",
     "prepublish": "npm run build",
@@ -64,6 +67,7 @@
     "bignumber.js": "^9.0.1",
     "form-data": "^4.0.0",
     "glob-promise": "^4.2.2",
+    "protobufjs": "~6.8.8",
     "qrcode": "^1.4.4",
     "uuid": "^8.3.2",
     "uuid-parse": "^1.1.0"
