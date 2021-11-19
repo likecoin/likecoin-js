@@ -14,17 +14,20 @@ export async function submitToArweaveAndISCN(
   const estimate = await estimateArweavePrice(files);
   const {
     arweaveId: existingArweaveId,
+    ipfsHash: existingIPFSHash,
     address,
     memo,
     LIKE,
   } = estimate;
   let arweaveId = existingArweaveId;
+  let ipfsHash = existingIPFSHash;
   if (!arweaveId) {
     const res = await sendLIKE(fromAddress, address, LIKE, signer, memo);
-    ({ arweaveId } = await uploadToArweave(files, res.transactionHash));
+    ({ arweaveId, ipfsHash } = await uploadToArweave(files, res.transactionHash));
   }
   let { contentFingerprints = [] } = iscnMetadata;
   if (!contentFingerprints) contentFingerprints = [];
+  if (ipfsHash) contentFingerprints.push(`ipfs://${ipfsHash}`);
   contentFingerprints.push(`ar://${arweaveId}`);
   const iscnMetadataWithArweaveId = { ...iscnMetadata, contentFingerprints };
   await signingClient.setSigner(signer);
