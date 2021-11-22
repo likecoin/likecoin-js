@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const { IS_TESTNET } = process.env;
+const { IS_TESTNET } = process?.env;
 
 const LIKE_CO_API_HOST = `https://api${IS_TESTNET ? '.rinkeby' : ''}.like.co`;
 

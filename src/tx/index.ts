@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assertIsBroadcastTxSuccess, SigningStargateClient, StargateClient } from '@cosmjs/stargate';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { OfflineSigner, decodeTxRaw } from '@cosmjs/proto-signing';
+import { OfflineSigner, decodeTxRaw, DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
 import BigNumber from 'bignumber.js';
 import {
@@ -18,6 +18,11 @@ export const DEFAULT_TRANSFER_FEE = {
     denom: COSMOS_DENOM,
   }],
 };
+
+export async function createSignerFromMenomics(mnemonic: string): Promise<OfflineSigner> {
+  const signer = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic);
+  return signer;
+}
 
 export async function sendLIKE(
   fromAddress: string,
