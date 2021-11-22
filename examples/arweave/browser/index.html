@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>LIKE pay</title>
+    <script src="../../../dist/umd/likecoin.umd.js"></script>
+  </head>
+
+  <body>
+    <div>
+      <form id="form1">
+        <h2>ISCN file uploader</h2>
+        <input type="file" class="filepicker" /><br />
+        <label for="name">ISCN Name</label><br />
+        <input class="name" name="name" value="ISCN Demo" /><br />
+        <label for="description">ISCN description</label><br />
+        <input
+          class="description"
+          name="description"
+          value="Simple description"
+        /><br />
+        <button type="submit">Submit</button><br />
+      </form>
+    </div>
+    <div>
+      <form id="form2">
+        <h2>ISCN folder uploader</h2>
+        <input type="file" class="filepicker" webkitdirectory multiple /><br />
+        <label for="name">ISCN Name</label><br />
+        <input class="name" name="name" value="ISCN Folder Demo" /><br />
+        <label for="description">ISCN description</label><br />
+        <input
+          class="description"
+          name="description"
+          value="Simple description"
+        /><br />
+        <button type="submit">Submit</button><br />
+      </form>
+    </div>
+    <script>
+      const mnemonic =
+        "surround miss nominee dream gap cross assault thank captain prosper drop duty group candy wealth weather scale put";
+
+      async function uploadToARISCN(formId) {
+        const files = document.querySelector(`#${formId} .filepicker`).files;
+        if (!files) return;
+        const name = document.querySelector(`#${formId} .name`);
+        const description = document.querySelector(`#${formId} .description`);
+
+        try {
+          const signer = await likecoin.tx.createSignerFromMenomics(mnemonic);
+          const [from] = await signer.getAccounts();
+          const res1 = await likecoin.arweave.submitToArweaveAndISCN(
+            files,
+            { name, description },
+            signer,
+            from.address
+          );
+          console.log(res1);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      document.getElementById("form1").addEventListener("submit", (e) => {
+        e.preventDefault();
+        uploadToARISCN('form1');
+      });
+      document.getElementById("form2").addEventListener("submit", (e) => {
+        e.preventDefault();
+        uploadToARISCN('form2');
+      });
+    </script>
+  </body>
+</html>
