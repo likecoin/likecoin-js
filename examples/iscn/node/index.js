@@ -6,20 +6,16 @@ const mnemonic = 'surround miss nominee dream gap cross assault thank captain pr
 async function main() {
   try {
     // https://github.com/likecoin/iscn-js samples
-    const client = new likecoin.iscn.ISCNQueryClient();
     // Query ISCN by ID
-    const res1 = await client.queryRecordsById('iscn://likecoin-chain/dLbKMa8EVO9RF4UmoWKk2ocUq7IsxMcnQL1_Ps5Vg80/1');
+    const res1 = await likecoin.iscn.queryRecordsById('iscn://likecoin-chain/dLbKMa8EVO9RF4UmoWKk2ocUq7IsxMcnQL1_Ps5Vg80/1');
     console.log(res1);
 
+    const client = likecoin.iscn.queryClient;
     // Query ISCN by owner
     const res2 = await client.queryRecordsByOwner('cosmos1sf2sc6t37xhd3m0dcaq6h5dz22mtru2ugdwp0v');
     console.log(res2);
 
     const signer = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic);
-    const [from] = await signer.getAccounts();
-
-    const signingClient = new likecoin.iscn.ISCNSigningClient();
-    await signingClient.connectWithSigner('https://mainnet-node.like.co/rpc/', signer);
 
     const ISCNPayload = {
       contentFingerprints: [
@@ -41,7 +37,8 @@ async function main() {
       keywords: ['matrix', 'recursion'],
     };
 
-    const res = await signingClient.createISCNRecord(from.address, ISCNPayload);
+    const res = await likecoin.iscn.createISCNRecord(signer, ISCNPayload);
+    console.log(res);
 
     const iscnID = await client.queryISCNIdsByTx(res.transactionHash);
     console.log(iscnID);
