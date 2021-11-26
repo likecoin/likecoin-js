@@ -19,7 +19,7 @@ export type ArweavePriceWithLIKE = {
   list?: ArweavePriceWithLIKE[];
 }
 
-export type estimateArweaveResponse = {
+export type EstimateArweaveResponse = {
   key?: string;
   arweaveId?: string;
   AR: string;
@@ -30,7 +30,7 @@ export type estimateArweaveResponse = {
   address: string;
 }
 
-export type uploadArweaveResponse = {
+export type UploadArweaveResponse = {
   arweaveId: string;
   ipfsHash: string;
   list?: ArweaveResult[];
