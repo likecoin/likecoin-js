@@ -11,7 +11,7 @@ npm i -S @likecoin/likecoin-js
 
 ## Usage
 
-Please refer to `exmaple` for usage examples
+Please refer to `example` for usage examples
 
 ```
 
