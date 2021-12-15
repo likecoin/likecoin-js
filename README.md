@@ -13,7 +13,6 @@ npm i -S @likecoin/likecoin-js
 
 Please refer to `example` for usage examples
 
-```
 
-[npm-image]: https://img.shields.io/npm/v/@likecoin/likecoin.svg
-[npm-url]: https://www.npmjs.com/package/@likecoin/likecoin
+[npm-image]: https://img.shields.io/npm/v/@likecoin/likecoin-js.svg
+[npm-url]: https://www.npmjs.com/package/@likecoin/likecoin-js
