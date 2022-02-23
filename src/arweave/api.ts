@@ -9,7 +9,10 @@ const axios = Axios.create({
   timeout: 60000,
 });
 
-export async function estimateArweavePrice(files: string | File[] | FileList)
+export async function estimateArweavePrice(
+  files: string | File[] | FileList,
+  { deduplicate = true }: { deduplicate?: boolean } = {},
+)
 : Promise<EstimateArweaveResponse> {
   let form: any;
   if (typeof files === 'string') {
@@ -23,13 +26,18 @@ export async function estimateArweavePrice(files: string | File[] | FileList)
     });
   }
   const res = await axios.post('/arweave/estimate', form, {
+    params: { deduplicate: deduplicate ? '1' : '0' },
     headers: isNode() ? { ...form.getHeaders() } : {},
   });
   const { data } = res;
   return data as EstimateArweaveResponse;
 }
 
-export async function uploadToArweave(files: string | File[] | FileList, txHash: string)
+export async function uploadToArweave(
+  files: string | File[] | FileList,
+  txHash: string,
+  { deduplicate = true }: { deduplicate?: boolean } = {},
+)
   : Promise<UploadArweaveResponse> {
   let form: any;
   if (typeof files === 'string') {
@@ -43,6 +51,7 @@ export async function uploadToArweave(files: string | File[] | FileList, txHash:
     });
   }
   const res = await axios.post(`/arweave/upload?txHash=${txHash}`, form, {
+    params: { deduplicate: deduplicate ? '1' : '0' },
     headers: isNode() ? { ...form.getHeaders() } : {},
   });
   const { data } = res;
