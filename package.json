@@ -68,7 +68,7 @@
     "bignumber.js": "^9.0.1",
     "form-data": "^4.0.0",
     "glob-promise": "^4.2.2",
-    "protobufjs": "~6.8.8",
+    "protobufjs": "~6.11.3",
     "qrcode": "^1.4.4",
     "uuid": "^8.3.2",
     "uuid-parse": "^1.1.0"
